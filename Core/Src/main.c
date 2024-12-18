@@ -42,7 +42,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+  uint32_t delay_times[] = {200, 2000, 5000}; // 3 уровня частоты
+  uint8_t counter = 0; // Счётчик нажатий кнопки
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,16 +98,18 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == GPIO_PIN_RESET) // Кнопка нажата (активный уровень низкий)
-	    {
-	      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); // Включить светодиод
-	    }
-	    else
-	    {
-	      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); // Выключить светодиод
-	    }
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+	  HAL_Delay(delay_times[counter]); // Задержка в зависимости от частоты
 
-	    HAL_Delay(50);
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+	  HAL_Delay(delay_times[counter]); // Задержка в зависимости от частоты
+
+	  if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == GPIO_PIN_RESET) // Кнопка нажата (активный уровень низкий)
+	  {
+	    HAL_Delay(200); // Задержка для подавления дребезга кнопки
+
+	    counter = (counter + 1) % 3; // Увеличиваем счётчик
+	  }
   }
   /* USER CODE END 3 */
 }
