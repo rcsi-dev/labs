@@ -41,7 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+volatile uint32_t timer_period = 100;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -210,6 +210,33 @@ void TIM3_IRQHandler(void)
   /* USER CODE BEGIN TIM3_IRQn 1 */
   HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
   /* USER CODE END TIM3_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI line[15:10] interrupts.
+  */
+void EXTI15_10_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); // Сбросить светодиод
+
+  // изменение периода
+  if (timer_period == 100) {
+    timer_period = 500;
+  } else if (timer_period == 500) {
+    timer_period = 1000;
+  } else {
+    timer_period = 100;  // возврат к начальному значению
+  }
+
+  // обновление параметров таймера
+  __HAL_TIM_SET_AUTORELOAD(&htim3, timer_period - 1);
+
+  /* USER CODE END EXTI15_10_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
+  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+
+  /* USER CODE END EXTI15_10_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
